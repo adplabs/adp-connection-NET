@@ -34,6 +34,10 @@ namespace ADPClient
     /// </summary>
     public abstract class ADPApiConnection
     {
+        /// <summary>
+        /// See https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=netframework-4.5
+        /// </summary>
+        private static HttpClient _httpClient = null;
 
         /// <summary>
         /// 
@@ -277,67 +281,85 @@ namespace ADPClient
             string responseString = null;
             FormUrlEncodedContent content = null;
             System.Net.Http.HttpResponseMessage response = null;
-            string certpath = (HttpContext.Current == null) ? connectionConfiguration.sslCertPath : HttpContext.Current.Server.MapPath(connectionConfiguration.sslCertPath);
+           
+            HttpClient client = GetStaticHttpClient();
 
-            var encodedCredentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(String.Format("{0}:{1}", connectionConfiguration.clientID, connectionConfiguration.clientSecret)));
+            // iat needs to support Basic Authentication
+            // uncomment this when it does.
 
-            WebRequestHandler handler = new WebRequestHandler();
-            X509Certificate2 certificate = LoadCertificateFile(certpath, connectionConfiguration.sslKeyPath, connectionConfiguration.sslKeyPass);
-            handler.ClientCertificates.Add(certificate);
-
-            using (var client = new HttpClient(handler))
+            if (authentication != null)
             {
-                // iat needs to support Basic Authentication
-                // uncomment this when it does.
-
-                if (authentication != null)
-                {
-                    client.DefaultRequestHeaders.Authorization = authentication;
-                }
-
-                client.DefaultRequestHeaders.Add("User-Agent", "adp-connection-net/1.0.1");
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType));
-
-                if (method.ToUpper().Equals("POST"))
-                {
-                    if (jsonBody != String.Empty)
-                    {
-                        var jsonContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-                        response = client.PostAsync(url, jsonContent).Result;
-                    }
-                    else if (data != null)
-                    {
-                        content = new FormUrlEncodedContent(data);
-                        response = client.PostAsync(url, content).Result;
-                    }
-
-
-                }
-                else
-                {
-                    response = client.GetAsync(url).Result;
-                }
-
-                if (response.IsSuccessStatusCode)
-                {
-                    // by calling .Result you are performing a synchronous call
-                    var responseContent = response.Content;
-
-                    // by calling .Result you are synchronously reading the result
-                    responseString = responseContent.ReadAsStringAsync().Result;
-                }
-                else
-                {
-                    // by calling .Result you are performing a synchronous call
-                    var responseContent = response.Content;
-
-                    // by calling .Result you are synchronously reading the result
-                    responseString = responseContent.ReadAsStringAsync().Result;
-                    throw new ADPConnectionException(String.Format("Connection Exception: {0}: {1}", response.StatusCode, responseString), new JavaScriptSerializer().Serialize(response));
-                }
+                client.DefaultRequestHeaders.Authorization = authentication;
             }
 
+            client.DefaultRequestHeaders.Add("User-Agent", "adp-connection-net/1.0.1");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType));
+
+            if (method.ToUpper().Equals("POST"))
+            {
+                if (jsonBody != String.Empty)
+                {
+                    var jsonContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                    response = client.PostAsync(url, jsonContent).Result;
+                }
+                else if (data != null)
+                {
+                    content = new FormUrlEncodedContent(data);
+                    response = client.PostAsync(url, content).Result;
+                }
+
+
+            }
+            else
+            {
+                response = client.GetAsync(url).Result;
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                // by calling .Result you are performing a synchronous call
+                var responseContent = response.Content;
+
+                // by calling .Result you are synchronously reading the result
+                responseString = responseContent.ReadAsStringAsync().Result;
+            }
+            else
+            {
+                // by calling .Result you are performing a synchronous call
+                var responseContent = response.Content;
+
+                // by calling .Result you are synchronously reading the result
+                responseString = responseContent.ReadAsStringAsync().Result;
+                throw new ADPConnectionException(String.Format("Connection Exception: {0}: {1}", response.StatusCode, responseString), new JavaScriptSerializer().Serialize(response));
+            }
+
+
             return responseString;
+        }
+
+        /// <summary>
+        /// Get instantiated HttpClient to perform ADP API requests.
+        /// 
+        /// 
+        /// See https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=netframework-4.5
+        /// "HttpClient is intended to be instantiated once and re-used throughout the life of an application."
+        /// </summary>
+        /// <param name="handler"></param>
+        /// <returns></returns>
+        private HttpClient GetStaticHttpClient()
+        {
+            if (_httpClient == null)
+            {
+                string certpath = (HttpContext.Current == null) ? connectionConfiguration.sslCertPath : HttpContext.Current.Server.MapPath(connectionConfiguration.sslCertPath);
+
+                WebRequestHandler handler = new WebRequestHandler();
+                X509Certificate2 certificate = LoadCertificateFile(certpath, connectionConfiguration.sslKeyPath, connectionConfiguration.sslKeyPass);
+                handler.ClientCertificates.Add(certificate);
+
+                _httpClient = new HttpClient(handler);
+            }
+
+            return _httpClient;           
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADPClient", "ADPClient\ADPClient.csproj", "{06AD62D7-6317-460E-802C-3CFE11D9C4DE}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -13,6 +13,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADPClientDemo", "ADPClientDemo\ADPClientDemo.csproj", "{C98733DC-6DA5-4AA1-A8C8-EC44BB180CBB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADPClientWebDemo", "ADPClientWebDemo\ADPClientWebDemo.csproj", "{15B89EA6-30F8-48EF-8B69-558CB6C18BEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADPClientTests", "ADPClientTests\ADPClientTests.csproj", "{2C2F4EAF-67BE-497A-9098-BFC34B5164AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,8 +38,15 @@ Global
 		{15B89EA6-30F8-48EF-8B69-558CB6C18BEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15B89EA6-30F8-48EF-8B69-558CB6C18BEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15B89EA6-30F8-48EF-8B69-558CB6C18BEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C2F4EAF-67BE-497A-9098-BFC34B5164AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C2F4EAF-67BE-497A-9098-BFC34B5164AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C2F4EAF-67BE-497A-9098-BFC34B5164AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C2F4EAF-67BE-497A-9098-BFC34B5164AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {54B82145-B14F-42F3-8647-84BC9798BB8A}
 	EndGlobalSection
 EndGlobal
