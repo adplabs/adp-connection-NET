@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Web.Script.Serialization;
 using ADPClient.ADPException;
+using System.Net;
 
 namespace ADPClient
 {
@@ -280,7 +281,7 @@ namespace ADPClient
             string certpath = (HttpContext.Current == null) ? connectionConfiguration.sslCertPath : HttpContext.Current.Server.MapPath(connectionConfiguration.sslCertPath);
 
             var encodedCredentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(String.Format("{0}:{1}", connectionConfiguration.clientID, connectionConfiguration.clientSecret)));
-
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             WebRequestHandler handler = new WebRequestHandler();
             X509Certificate2 certificate = LoadCertificateFile(certpath, connectionConfiguration.sslKeyPath, connectionConfiguration.sslKeyPass);
             handler.ClientCertificates.Add(certificate);
